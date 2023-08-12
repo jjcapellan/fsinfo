@@ -1,9 +1,12 @@
 package fsinfo
 
 import (
+	"encoding/hex"
 	"os"
 	"path/filepath"
+	"regexp"
 	"runtime"
+	"strconv"
 	"strings"
 )
 
@@ -22,6 +25,11 @@ type Folder struct {
 type File struct {
 	Name string // File's name
 	Path string // Absolute file's path
+}
+
+type DriveInfo struct {
+	Name string
+	Path string
 }
 
 var CURRENT_DIR, _ = os.Getwd()
@@ -73,4 +81,96 @@ func GetFolderInfo(path string) (*FolderInfo, error) {
 	folderInfo.Folders = folders
 
 	return folderInfo, err
+}
+
+func GetDrives() []DriveInfo {
+	drives := []DriveInfo{}
+
+	if runtime.GOOS == "linux" {
+
+		data, _ := os.ReadFile("/proc/self/mountinfo")
+
+		var rgx = regexp.MustCompile(`\s\/media\/\S+\b`)
+		matches := rgx.FindAllString(string(data), -1)
+		for _, v := range matches {
+			drive := DriveInfo{}
+
+			path := strings.ReplaceAll(v, `\040`, " ")
+			path = strings.TrimSpace(path)
+			drive.Path = path
+
+			parts := strings.Split(path, "/")
+			name := parts[len(parts)-1]
+			if isUUID(name) {
+				f, _ := os.Open(path)
+				info, _ := f.Stat()
+				name = "Volume of " + convSize(info.Size())
+				f.Close()
+			}
+
+			drive.Name = name
+
+			drives = append(drives, drive)
+		}
+	}
+
+	return drives
+}
+
+func isUUID(str string) bool {
+	l := len(str)
+	if l != 9 && l != 16 {
+		return false
+	}
+
+	// Hex number --> XXXXXXXXXXXXXXXX
+	if l == 16 {
+		_, err := hex.DecodeString(str)
+		if err != nil {
+			return false
+		}
+	}
+
+	// Hex number --> XXXX-XXXX
+	if l == 9 {
+		if str[4] != '-' {
+			return false
+		}
+		n1 := str[:4]
+		n2 := str[5:]
+		_, err := hex.DecodeString(n1)
+		if err != nil {
+			return false
+		}
+		_, err = hex.DecodeString(n2)
+		if err != nil {
+			return false
+		}
+	}
+
+	return true
+}
+
+func convSize(size int64) string {
+	sizeF := float64(size)
+	sufix := "byte"
+	// bytes to kb
+	if sizeF > 999 {
+		sizeF /= 1024
+		sufix = "Kb"
+	}
+	// Kb to Mb
+	if sizeF > 999 {
+		sizeF /= 1024
+		sufix = "Mb"
+	}
+	// Mb to Gb
+	if sizeF > 999 {
+		sizeF /= 1024
+		sufix = "Gb"
+	}
+
+	size = int64(sizeF)
+
+	return strconv.Itoa(int(size)) + sufix
 }
