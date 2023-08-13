@@ -34,12 +34,6 @@ type DriveInfo struct {
 }
 
 var CURRENT_DIR, _ = os.Getwd()
-var DRIVES []DriveInfo
-
-func Init() string {
-	out, _ := exec.Command("df", "-H").Output()
-	return string(out)
-}
 
 func GetFolderInfo(path string) (*FolderInfo, error) {
 
