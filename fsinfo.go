@@ -1,6 +1,7 @@
 package fsinfo
 
 import (
+	"bufio"
 	"encoding/hex"
 	"os"
 	"os/exec"
@@ -91,53 +92,69 @@ func GetFolderInfo(path string) (*FolderInfo, error) {
 }
 
 func GetDrives() []DriveInfo {
-	drives := []DriveInfo{}
 
 	if runtime.GOOS == "linux" {
-
-		out, _ := exec.Command("df", "-H").Output()
-
-		str := string(out)
-
-		lines := strings.Split(str, "\n")
-		var rows []string
-		for _, line := range lines {
-			if strings.Contains(line, " /media/") {
-				rows = append(rows, line)
-			}
-		}
-		var rgxSize = regexp.MustCompile(`\w+(\s{2}\w+%)`)
-		var rgxName = regexp.MustCompile(`[\w\s]+$`)
-		var rgxPath = regexp.MustCompile(`\s/media/.+$`)
-
-		for _, row := range rows {
-			drive := DriveInfo{}
-			// Name
-			name := rgxName.FindString(row)
-			if isUUID(name) {
-				size, _, _ := strings.Cut(rgxSize.FindString(row), "  ")
-				name = "Volume of " + size
-			}
-			drive.Name = name
-			// Path
-			drive.Path = strings.TrimSpace(rgxPath.FindString(row))
-			drives = append(drives, drive)
-		}
+		return getLinuxDrives()
 	}
 
 	if runtime.GOOS == "windows" {
-		for _, letter := range "ABCDEFGHIJKLMNOPQRSTUVWXYZ" {
-			fsEntry, err := os.Open(string(letter) + `:\`)
-			if err == nil {
-				drive := DriveInfo{}
-				drive.Name = string(letter) + ":"
-				drive.Path = drive.Name + `/`
-				drives = append(drives, drive)
-				fsEntry.Close()
-			}
+		return getWindowsDrives()
+	}
+
+	return []DriveInfo{}
+}
+
+func getLinuxDrives() []DriveInfo {
+	drives := []DriveInfo{}
+
+	// This command reports mounts information
+	out, _ := exec.Command("df", "-H").Output()
+	str := string(out)
+
+	// All paths of storage volumes starts with string " /media/"
+	scanner := bufio.NewScanner(strings.NewReader(str))
+	var lines []string
+	for scanner.Scan() {
+		line := scanner.Text()
+		if strings.Contains(line, " /media/") {
+			lines = append(lines, line)
 		}
 	}
 
+	// Regex to extract size, name and path from each line
+	var rgxSize = regexp.MustCompile(`\w+(\s{2}\w+%)`)
+	var rgxName = regexp.MustCompile(`[\w\s]+$`)
+	var rgxPath = regexp.MustCompile(`\s/media/.+$`)
+
+	for _, line := range lines {
+		drive := DriveInfo{}
+		// Name (Disk label || "Volume of size x")
+		name := rgxName.FindString(line)
+		if isUUID(name) {
+			size, _, _ := strings.Cut(rgxSize.FindString(line), "  ")
+			name = "Volume of " + size
+		}
+		drive.Name = name
+		// Path
+		drive.Path = strings.TrimSpace(rgxPath.FindString(line))
+		drives = append(drives, drive)
+	}
+
+	return drives
+}
+
+func getWindowsDrives() []DriveInfo {
+	drives := []DriveInfo{}
+	for _, letter := range "ABCDEFGHIJKLMNOPQRSTUVWXYZ" {
+		fsEntry, err := os.Open(string(letter) + `:\`)
+		if err == nil {
+			drive := DriveInfo{}
+			drive.Name = string(letter) + ":"
+			drive.Path = drive.Name + `/`
+			drives = append(drives, drive)
+			fsEntry.Close()
+		}
+	}
 	return drives
 }
 
