@@ -1,3 +1,6 @@
+// fsinfo is a lightweight Go package designed to retrieve essential information about folders and drives
+// in both Linux and Windows environments. It can be used to gather insights into the file system and storage
+// devices on the host machine (e.g.: file browser for local webapp).
 package fsinfo
 
 import (
