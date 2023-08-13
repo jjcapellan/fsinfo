@@ -1,5 +1,5 @@
 # fsinfo: File System Information
-fsinfo is a Go package designed to retrieve essential information about folders and drives in both Linux and Windows environments. It can be used to gather insights into the file system and storage devices on the host machine (e.g.: file browser for local webapp).
+fsinfo is a lightweight Go package designed to retrieve essential information about folders and drives in both Linux and Windows environments. It can be used to gather insights into the file system and storage devices on the host machine (e.g.: file browser for local webapp).
 
 ## Features
 * GetFolderInfo: Retrieve information about a folder's contents, subfolders, and files.
