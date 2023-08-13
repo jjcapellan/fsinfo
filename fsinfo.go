@@ -3,6 +3,7 @@ package fsinfo
 import (
 	"encoding/hex"
 	"os"
+	"os/exec"
 	"path/filepath"
 	"regexp"
 	"runtime"
@@ -33,6 +34,12 @@ type DriveInfo struct {
 }
 
 var CURRENT_DIR, _ = os.Getwd()
+var DRIVES []DriveInfo
+
+func Init() string {
+	out, _ := exec.Command("df", "-H").Output()
+	return string(out)
+}
 
 func GetFolderInfo(path string) (*FolderInfo, error) {
 
@@ -88,28 +95,32 @@ func GetDrives() []DriveInfo {
 
 	if runtime.GOOS == "linux" {
 
-		data, _ := os.ReadFile("/proc/self/mountinfo")
+		out, _ := exec.Command("df", "-H").Output()
 
-		var rgx = regexp.MustCompile(`\s\/media\/\S+\b`)
-		matches := rgx.FindAllString(string(data), -1)
-		for _, v := range matches {
-			drive := DriveInfo{}
+		str := string(out)
 
-			path := strings.ReplaceAll(v, `\040`, " ")
-			path = strings.TrimSpace(path)
-			drive.Path = path
-
-			parts := strings.Split(path, "/")
-			name := parts[len(parts)-1]
-			if isUUID(name) {
-				f, _ := os.Open(path)
-				info, _ := f.Stat()
-				name = "Volume of " + convSize(info.Size())
-				f.Close()
+		lines := strings.Split(str, "\n")
+		var rows []string
+		for _, line := range lines {
+			if strings.Contains(line, " /media/") {
+				rows = append(rows, line)
 			}
+		}
+		var rgxSize = regexp.MustCompile(`\w+(\s{2}\w+%)`)
+		var rgxName = regexp.MustCompile(`[\w\s]+$`)
+		var rgxPath = regexp.MustCompile(`\s/media/.+$`)
 
+		for _, row := range rows {
+			drive := DriveInfo{}
+			// Name
+			name := rgxName.FindString(row)
+			if isUUID(name) {
+				size, _, _ := strings.Cut(rgxSize.FindString(row), "  ")
+				name = "Volume of " + size
+			}
 			drive.Name = name
-
+			// Path
+			drive.Path = strings.TrimSpace(rgxPath.FindString(row))
 			drives = append(drives, drive)
 		}
 	}
