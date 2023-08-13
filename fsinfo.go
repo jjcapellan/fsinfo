@@ -11,11 +11,12 @@ import (
 	"strings"
 )
 
+// FolderInfo contains information about a folder and its contents.
 type FolderInfo struct {
 	Path    string   `json:"path"`    // Absolute folder's path
-	Dir     string   `json:"parent"`  // Directory where is the folder
-	Folders []Folder `json:"folders"` // Folders contained in current folder
-	Files   []File   `json:"files"`   // Files contained in current folder
+	Dir     string   `json:"parent"`  // Directory where the folder is located
+	Folders []Folder `json:"folders"` // Subfolders contained within the folder
+	Files   []File   `json:"files"`   // Files contained within the folder
 }
 
 type Folder struct {
@@ -35,6 +36,10 @@ type DriveInfo struct {
 
 var CURRENT_DIR, _ = os.Getwd()
 
+// GetFolderInfo retrieves information about a folder's contents and its parent directory.
+// It returns a pointer to a FolderInfo struct containing details about the folder, its subfolders,
+// and the files it contains.
+// The provided path should be an absolute or relative path to the folder.
 func GetFolderInfo(path string) (*FolderInfo, error) {
 
 	folderInfo := &FolderInfo{}
@@ -84,18 +89,14 @@ func GetFolderInfo(path string) (*FolderInfo, error) {
 	return folderInfo, err
 }
 
-/**
-* GetDrives gets the names and full paths of storage volumes,
-* and returns it as []DriveInfo.
-* This function could have an impact on performance, especially on Windows,
-* so it is recommended to use it only if necessary.
-* In windows:
-* DriveInfo.Name --> drive letter (e.g.: "c:", "d:", "e:")
-* DriveInfo.Path --> drive letter + forward slash (e.g.: "c:/")
-* In linux:
-* DriveInfo.Name --> drive label || "Volume of size xx" (e.g.: "VolMusic" || "Volume of size 120G")
-* DriveInfo.Path -->
- */
+// GetDrives retrieves information about available drives on the system.
+// Returns a slice of DriveInfo structs containing details about the available drives.
+// In windows:
+// DriveInfo.Name --> drive letter (e.g.: "c:", "d:", "e:")
+// DriveInfo.Path --> drive letter + forward slash (e.g.: "c:/")
+// In linux:
+// DriveInfo.Name --> drive label || "Volume of size xx" (e.g.: "VolMusic" || "Volume of size 120G")
+// DriveInfo.Path --> /fullPath/driveLabel (e.g.: "/media/user/VolMusic")
 func GetDrives() []DriveInfo {
 
 	if runtime.GOOS == "linux" {
@@ -109,6 +110,9 @@ func GetDrives() []DriveInfo {
 	return []DriveInfo{}
 }
 
+// getLinuxDrives retrieves information about available drives on a Linux system.
+// It uses the "df" command to obtain disk usage and mounts information.
+// Returns a slice of DriveInfo structs containing details about the drives.
 func getLinuxDrives() []DriveInfo {
 	drives := []DriveInfo{}
 
@@ -148,6 +152,9 @@ func getLinuxDrives() []DriveInfo {
 	return drives
 }
 
+// getWindowsDrives retrieves information about available drives on a Windows system.
+// It iterates through drive letters and checks for their existence using os.Open.
+// Returns a slice of DriveInfo structs containing details about the drives.
 func getWindowsDrives() []DriveInfo {
 	drives := []DriveInfo{}
 	for _, letter := range "ABCDEFGHIJKLMNOPQRSTUVWXYZ" {
@@ -163,6 +170,8 @@ func getWindowsDrives() []DriveInfo {
 	return drives
 }
 
+// isUUID checks if a given string follows the pattern of a UUID (16 characters) or a shorter format (9 characters).
+// Returns true if the string is a valid UUID or shorter hex format, false otherwise.
 func isUUID(str string) bool {
 	l := len(str)
 	if l != 9 && l != 16 {
