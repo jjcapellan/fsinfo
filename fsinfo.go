@@ -90,6 +90,18 @@ func GetFolderInfo(path string) (*FolderInfo, error) {
 	return folderInfo, err
 }
 
+/**
+* GetDrives gets the names and full paths of storage volumes,
+* and returns it as []DriveInfo.
+* This function could have an impact on performance, especially on Windows,
+* so it is recommended to use it only if necessary.
+* In windows:
+* DriveInfo.Name --> drive letter (e.g.: "c:", "d:", "e:")
+* DriveInfo.Path --> drive letter + forward slash (e.g.: "c:/")
+* In linux:
+* DriveInfo.Name --> drive label || "Volume of size xx" (e.g.: "VolMusic" || "Volume of size 120G")
+* DriveInfo.Path -->
+ */
 func GetDrives() []DriveInfo {
 
 	if runtime.GOOS == "linux" {
