@@ -125,6 +125,19 @@ func GetDrives() []DriveInfo {
 		}
 	}
 
+	if runtime.GOOS == "windows" {
+		for _, letter := range "ABCDEFGHIJKLMNOPQRSTUVWXYZ" {
+			fsEntry, err := os.Open(string(letter) + `:\`)
+			if err == nil {
+				drive := DriveInfo{}
+				drive.Name = string(letter) + ":"
+				drive.Path = drive.Name + `/`
+				drives = append(drives, drive)
+				fsEntry.Close()
+			}
+		}
+	}
+
 	return drives
 }
 
