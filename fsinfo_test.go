@@ -1,10 +1,13 @@
 package fsinfo
 
 import (
+	"bytes"
+	"fmt"
 	"os"
 	"path/filepath"
 	"sort"
 	"testing"
+	"text/tabwriter"
 )
 
 var wd, _ = os.Getwd()
@@ -70,6 +73,18 @@ func TestGetFolderInfoRel(t *testing.T) {
 		}
 	}
 
+}
+
+func TestGetDrives(t *testing.T) {
+	drives := GetDrives()
+	buffer := &bytes.Buffer{}
+	tw := tabwriter.NewWriter(buffer, 5, 4, 2, ' ', 0)
+	fmt.Fprintln(tw, "\nName\tPath")
+	for _, drive := range drives {
+		fmt.Fprintln(tw, drive.Name+"\t"+drive.Path)
+	}
+	tw.Flush()
+	t.Log(buffer.String())
 }
 
 func TestConvSize(t *testing.T) {
