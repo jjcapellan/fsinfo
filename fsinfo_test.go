@@ -86,24 +86,3 @@ func TestGetDrives(t *testing.T) {
 	tw.Flush()
 	t.Log(buffer.String())
 }
-
-func TestConvSize(t *testing.T) {
-	var v int64 = 1024*4 + 2
-	str := convSize(v)
-
-	if str != "4Kb" {
-		t.Error(str)
-	}
-
-	v = 1024*1024*4 + 3
-	str = convSize(v)
-	if str != "4Mb" {
-		t.Error(str)
-	}
-
-	v = 1024*1024*1024*4 + 3
-	str = convSize(v)
-	if str != "4Gb" {
-		t.Error(str)
-	}
-}

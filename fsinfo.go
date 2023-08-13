@@ -8,7 +8,6 @@ import (
 	"path/filepath"
 	"regexp"
 	"runtime"
-	"strconv"
 	"strings"
 )
 
@@ -190,28 +189,4 @@ func isUUID(str string) bool {
 	}
 
 	return true
-}
-
-func convSize(size int64) string {
-	sizeF := float64(size)
-	sufix := "byte"
-	// bytes to kb
-	if sizeF > 999 {
-		sizeF /= 1024
-		sufix = "Kb"
-	}
-	// Kb to Mb
-	if sizeF > 999 {
-		sizeF /= 1024
-		sufix = "Mb"
-	}
-	// Mb to Gb
-	if sizeF > 999 {
-		sizeF /= 1024
-		sufix = "Gb"
-	}
-
-	size = int64(sizeF)
-
-	return strconv.Itoa(int(size)) + sufix
 }
