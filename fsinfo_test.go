@@ -86,3 +86,9 @@ func TestGetDrives(t *testing.T) {
 	tw.Flush()
 	t.Log(buffer.String())
 }
+
+func BenchmarkGetDrives(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		_ = GetDrives()
+	}
+}
