@@ -38,7 +38,11 @@ for _, file := range folderInfo.Files {
 ### GetDrives
 The GetDrives function retrieves information about available drives on the system. Here's how to use it:  
 ```go
-drives := fsinfo.GetDrives()
+drives, err := fsinfo.GetDrives()
+if err != nil {
+    fmt.Println("Error:", err)
+    return
+}
 fmt.Println("Available Drives:")
 for _, drive := range drives {
     fmt.Println("  -", drive.Name, ":", drive.Path)

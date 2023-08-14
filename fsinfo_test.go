@@ -76,7 +76,10 @@ func TestGetFolderInfoRel(t *testing.T) {
 }
 
 func TestGetDrives(t *testing.T) {
-	drives := GetDrives()
+	drives, err := GetDrives()
+	if err != nil {
+		t.Fatal("Error retrieving drives info")
+	}
 	buffer := &bytes.Buffer{}
 	tw := tabwriter.NewWriter(buffer, 5, 4, 2, ' ', 0)
 	fmt.Fprintln(tw, "\nName\tPath")
@@ -89,6 +92,6 @@ func TestGetDrives(t *testing.T) {
 
 func BenchmarkGetDrives(b *testing.B) {
 	for i := 0; i < b.N; i++ {
-		_ = GetDrives()
+		_, _ = GetDrives()
 	}
 }

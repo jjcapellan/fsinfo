@@ -6,10 +6,9 @@ package fsinfo
 import (
 	"bufio"
 	"encoding/hex"
+	"errors"
 	"os"
-	"os/exec"
 	"path/filepath"
-	"regexp"
 	"runtime"
 	"strings"
 )
@@ -98,61 +97,51 @@ func GetFolderInfo(path string) (*FolderInfo, error) {
 // DriveInfo.Name --> drive letter (e.g.: "c:", "d:", "e:")
 // DriveInfo.Path --> drive letter + forward slash (e.g.: "c:/")
 // In linux:
-// DriveInfo.Name --> drive label || "Volume of size xx" (e.g.: "VolMusic" || "Volume of size 120G")
+// DriveInfo.Name --> drive label || UUID (e.g.: "VolMusic" || "8212883A12883567")
 // DriveInfo.Path --> /fullPath/driveLabel (e.g.: "/media/user/VolMusic")
-func GetDrives() []DriveInfo {
+func GetDrives() ([]DriveInfo, error) {
 
 	if runtime.GOOS == "linux" {
 		return getLinuxDrives()
 	}
 
 	if runtime.GOOS == "windows" {
-		return getWindowsDrives()
+		return getWindowsDrives(), nil
 	}
 
-	return []DriveInfo{}
+	return []DriveInfo{}, errors.New("os not supported")
 }
 
-// getLinuxDrives retrieves information about available drives on a Linux system.
-// It uses the "df" command to obtain disk usage and mounts information.
-// Returns a slice of DriveInfo structs containing details about the drives.
-func getLinuxDrives() []DriveInfo {
+// getLinuxDrives gathers information about mounted drives on a Linux system.
+// It utilizes the /proc/self/mountinfo file to retrieve information about mounted drives.
+// It returns a list of DriveInfo structures containing the name and path of the drives,
+// and an error if the information cannot be accessed.
+func getLinuxDrives() ([]DriveInfo, error) {
 	drives := []DriveInfo{}
 
-	// This command reports mounts information
-	out, _ := exec.Command("df", "-H").Output()
-	str := string(out)
+	// Root file system
+	drives = append(drives, DriveInfo{Name: "File system", Path: "/"})
 
-	// All paths of storage volumes starts with string " /media/"
-	scanner := bufio.NewScanner(strings.NewReader(str))
-	var lines []string
+	f, err := os.Open("/proc/self/mountinfo")
+	if err != nil {
+		return drives, err
+	}
+	defer f.Close()
+
+	scanner := bufio.NewScanner(f)
 	for scanner.Scan() {
 		line := scanner.Text()
-		if strings.Contains(line, " /media/") {
-			lines = append(lines, line)
+		fields := strings.Fields(line)
+		path := fields[4]
+		if !strings.HasPrefix(path, "/media/") {
+			continue
 		}
+		path = strings.ReplaceAll(path, `\040`, " ")
+		name := path[strings.LastIndexByte(path, '/')+1:]
+		drives = append(drives, DriveInfo{Name: name, Path: path})
 	}
 
-	// Regex to extract size, name and path from each line
-	var rgxSize = regexp.MustCompile(`\w+(\s{2}\w+%)`)
-	var rgxName = regexp.MustCompile(`[\w\s]+$`)
-	var rgxPath = regexp.MustCompile(`\s/media/.+$`)
-
-	for _, line := range lines {
-		drive := DriveInfo{}
-		// Name (Disk label || "Volume of size x")
-		name := rgxName.FindString(line)
-		if isUUID(name) {
-			size, _, _ := strings.Cut(rgxSize.FindString(line), "  ")
-			name = "Volume of " + size
-		}
-		drive.Name = name
-		// Path
-		drive.Path = strings.TrimSpace(rgxPath.FindString(line))
-		drives = append(drives, drive)
-	}
-
-	return drives
+	return drives, nil
 }
 
 // getWindowsDrives retrieves information about available drives on a Windows system.
