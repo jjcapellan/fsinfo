@@ -5,4 +5,3 @@
 * Support for Linux and Windows environments.
 * Proper formatting of paths for different operating systems.
 * Parsing and extraction of drive information on both Linux and Windows.
-* UUID validation function for drive naming.
