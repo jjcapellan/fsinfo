@@ -112,6 +112,32 @@ func GetDrives() ([]DriveInfo, error) {
 	return []DriveInfo{}, errors.New("os not supported")
 }
 
+// GetHomePath retrieves the home directory path of the current user.
+// The function returns the home directory path and an error if encountered.
+//
+// Returns:
+// - string: The home directory path of the current user.
+// - error: An error, if any, that occurred during the retrieval of the home directory path.
+//
+// Example usage:
+//   homePath, err := GetHomePath()
+//   if err != nil {
+//       fmt.Println("Error:", err)
+//       return
+//   }
+//   fmt.Println("Home Directory Path:", homePath)
+func GetHomePath() (string, error) {
+
+	path, err := os.UserHomeDir()
+	if err != nil {
+		return "", err
+	}
+
+	path = filepath.ToSlash(path)
+
+	return path, nil
+}
+
 // getLinuxDrives gathers information about mounted drives on a Linux system.
 // It utilizes the /proc/self/mountinfo file to retrieve information about mounted drives.
 // It returns a list of DriveInfo structures containing the name and path of the drives,

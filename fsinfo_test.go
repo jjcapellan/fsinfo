@@ -90,6 +90,14 @@ func TestGetDrives(t *testing.T) {
 	t.Log(buffer.String())
 }
 
+func TestGetHomePath(t *testing.T) {
+	path, err := GetHomePath()
+	if err != nil {
+		t.Fatalf("Error retrievng home path: %s", err)
+	}
+	t.Log(path)
+}
+
 func BenchmarkGetDrives(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		_, _ = GetDrives()
