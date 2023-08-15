@@ -1,4 +1,4 @@
-// fsinfo is a lightweight Go package designed to retrieve essential information about folders and drives
+// Package fsinfo is a lightweight Go package designed to retrieve essential information about folders and drives
 // in both Linux and Windows environments. It can be used to gather insights into the file system and storage
 // devices on the host machine (e.g.: file browser for local webapp).
 package fsinfo
@@ -38,10 +38,36 @@ type DriveInfo struct {
 
 var CURRENT_DIR, _ = os.Getwd()
 
-// GetFolderInfo retrieves information about a folder's contents and its parent directory.
-// It returns a pointer to a FolderInfo struct containing details about the folder, its subfolders,
+// GetFolderInfo retrieves information about the contents of a specified folder and its parent directory.
+// It returns a pointer to a FolderInfo struct that contains details about the folder, its subfolders,
 // and the files it contains.
-// The provided path should be an absolute or relative path to the folder.
+//
+// Parameters:
+//  - path (string): An absolute or relative path to the folder for which information is to be retrieved.
+//
+// Returns:
+//  - *FolderInfo: A pointer to a FolderInfo struct with information about the folder and its contents.
+//  - error: An error, if any, that occurred during the retrieval of the folder information.
+//
+// Example usage:
+//   folderPath := "/path/to/folder"
+//   folderInfo, err := GetFolderInfo(folderPath)
+//   if err != nil {
+//       fmt.Println("Error:", err)
+//       return
+//   }
+//   fmt.Println("Folder Path:", folderInfo.Path)
+//   fmt.Println("Parent Directory:", folderInfo.Dir)
+//   fmt.Println("Subfolders:")
+//   for _, subfolder := range folderInfo.Folders {
+//       fmt.Println("  Name:", subfolder.Name)
+//       fmt.Println("  Path:", subfolder.Path)
+//   }
+//   fmt.Println("Files:")
+//   for _, file := range folderInfo.Files {
+//       fmt.Println("  Name:", file.Name)
+//       fmt.Println("  Path:", file.Path)
+//   }
 func GetFolderInfo(path string) (*FolderInfo, error) {
 
 	folderInfo := &FolderInfo{}
@@ -91,14 +117,24 @@ func GetFolderInfo(path string) (*FolderInfo, error) {
 	return folderInfo, err
 }
 
-// GetDrives retrieves information about available drives on the system.
-// Returns a slice of DriveInfo structs containing details about the available drives.
-// In windows:
-// DriveInfo.Name --> drive letter (e.g.: "c:", "d:", "e:")
-// DriveInfo.Path --> drive letter + forward slash (e.g.: "c:/")
-// In linux:
-// DriveInfo.Name --> drive label || UUID (e.g.: "VolMusic" || "8212883A12883567")
-// DriveInfo.Path --> /fullPath/driveLabel (e.g.: "/media/user/VolMusic")
+// GetDrives retrieves information about the available drives on the system.
+// It returns a slice of DriveInfo structs containing details about the available drives.
+//
+// Returns:
+//  - []DriveInfo: A slice of DriveInfo structs with information about the available drives.
+//  - error: An error if the information about drives cannot be retrieved.
+//
+// Example usage:
+//   drives, err := GetDrives()
+//   if err != nil {
+//       fmt.Println("Error:", err)
+//       return
+//   }
+//   fmt.Println("Available Drives:")
+//   for _, drive := range drives {
+//       fmt.Println("  Name:", drive.Name)
+//       fmt.Println("  Path:", drive.Path)
+//   }
 func GetDrives() ([]DriveInfo, error) {
 
 	if runtime.GOOS == "linux" {
@@ -116,8 +152,8 @@ func GetDrives() ([]DriveInfo, error) {
 // The function returns the home directory path and an error if encountered.
 //
 // Returns:
-// - string: The home directory path of the current user.
-// - error: An error, if any, that occurred during the retrieval of the home directory path.
+//  - string: The home directory path of the current user.
+//  - error: An error, if any, that occurred during the retrieval of the home directory path.
 //
 // Example usage:
 //   homePath, err := GetHomePath()
