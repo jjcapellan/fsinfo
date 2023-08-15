@@ -5,7 +5,6 @@ package fsinfo
 
 import (
 	"bufio"
-	"encoding/hex"
 	"errors"
 	"os"
 	"path/filepath"
@@ -222,40 +221,4 @@ func getWindowsDrives() []DriveInfo {
 		}
 	}
 	return drives
-}
-
-// isUUID checks if a given string follows the pattern of a UUID (16 characters) or a shorter format (9 characters).
-// Returns true if the string is a valid UUID or shorter hex format, false otherwise.
-func isUUID(str string) bool {
-	l := len(str)
-	if l != 9 && l != 16 {
-		return false
-	}
-
-	// Hex number --> XXXXXXXXXXXXXXXX
-	if l == 16 {
-		_, err := hex.DecodeString(str)
-		if err != nil {
-			return false
-		}
-	}
-
-	// Hex number --> XXXX-XXXX
-	if l == 9 {
-		if str[4] != '-' {
-			return false
-		}
-		n1 := str[:4]
-		n2 := str[5:]
-		_, err := hex.DecodeString(n1)
-		if err != nil {
-			return false
-		}
-		_, err = hex.DecodeString(n2)
-		if err != nil {
-			return false
-		}
-	}
-
-	return true
 }
