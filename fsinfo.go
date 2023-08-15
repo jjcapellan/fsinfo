@@ -36,7 +36,7 @@ type DriveInfo struct {
 	Path string
 }
 
-var CURRENT_DIR, _ = os.Getwd()
+var current_dir, _ = os.Getwd()
 
 // GetFolderInfo retrieves information about the contents of a specified folder and its parent directory.
 // It returns a pointer to a FolderInfo struct that contains details about the folder, its subfolders,
@@ -73,7 +73,7 @@ func GetFolderInfo(path string) (*FolderInfo, error) {
 	folderInfo := &FolderInfo{}
 	path = filepath.Clean(path)
 	if !filepath.IsAbs(path) {
-		path = filepath.Join(CURRENT_DIR, path)
+		path = filepath.Join(current_dir, path)
 	}
 	dir := filepath.Dir(path)
 
