@@ -6,6 +6,7 @@ package fsinfo
 import (
 	"bufio"
 	"errors"
+	"fmt"
 	"os"
 	"path/filepath"
 	"runtime"
@@ -228,4 +229,36 @@ func getWindowsDrives() []DriveInfo {
 		}
 	}
 	return drives
+}
+
+// FormatBytes converts a size in bytes into a human-readable string representation.
+// The function takes a size in bytes as input and returns a string that includes
+// the formatted size in appropriate units (bytes, kilobytes, megabytes, gigabytes, terabytes, or petabytes).
+// If the size is zero, the string "0B" will be returned.
+//
+// Parameters:
+//   - size: The size in bytes to be formatted.
+//
+// Returns:
+//   A string representing the formatted size with the corresponding unit.
+//
+// Example:
+//   size := int64(1234567890)
+//   formattedSize := FormatBytes(size)
+//   fmt.Println("File size:", formattedSize)
+//
+// Expected Output:
+//   File size: 1.15 GB
+func FormatBytes(size int64) string {
+	units := []string{"B", "KB", "MB", "GB", "TB", "PB"}
+
+	var idx int
+	fSize := float64(size)
+
+	for fSize >= 1024 && idx < len(units)-1 {
+		fSize /= 1024
+		idx++
+	}
+
+	return fmt.Sprintf("%.2f%s", fSize, units[idx])
 }

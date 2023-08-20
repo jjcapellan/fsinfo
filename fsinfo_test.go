@@ -103,3 +103,9 @@ func BenchmarkGetDrives(b *testing.B) {
 		_, _ = GetDrives()
 	}
 }
+
+func BenchmarkFormatBytes(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		_ = FormatBytes(8456213210)
+	}
+}
