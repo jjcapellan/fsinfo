@@ -61,15 +61,15 @@ func TestGetFolderInfoRel(t *testing.T) {
 
 	for k, v := range folders {
 		_v := folders[k]
-		if _v != v {
-			t.Fatalf("Error in folderInfo.Folders[%d]\nPath: %s\nValue: %s\nExpected: %s", k, path1, _v, v)
+		if _v.Path != v.Path {
+			t.Fatalf("Error in folderInfo.Folders[%d]\nPath: %s\nValue: %s\nExpected: %s", k, path1, _v.Path, v.Path)
 		}
 	}
 
 	for k, v := range files {
 		_v := files[k]
-		if _v != v {
-			t.Fatalf("Error in folderInfo.Files[%d]\nPath: %s\nValue: %s\nExpected: %s", k, path1, _v, v)
+		if _v.Path != v.Path {
+			t.Fatalf("Error in folderInfo.Files[%d]\nPath: %s\nValue: %s\nExpected: %s", k, path1, _v.Path, v.Path)
 		}
 	}
 

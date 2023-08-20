@@ -10,6 +10,7 @@ import (
 	"path/filepath"
 	"runtime"
 	"strings"
+	"time"
 )
 
 // FolderInfo contains information about a folder and its contents.
@@ -26,8 +27,10 @@ type Folder struct {
 }
 
 type File struct {
-	Name string // File's name
-	Path string // Absolute file's path
+	Name    string // File's name
+	Path    string // Absolute file's path
+	Size    int64
+	ModTime time.Time
 }
 
 type DriveInfo struct {
@@ -105,8 +108,12 @@ func GetFolderInfo(path string) (*FolderInfo, error) {
 			continue
 		}
 		file := File{}
-		file.Name = v.Name()
+		finfo, _ := v.Info()
+
+		file.Name = finfo.Name()
 		file.Path = path + "/" + file.Name
+		file.Size = finfo.Size()
+		file.ModTime = finfo.ModTime()
 		files = append(files, file)
 	}
 
