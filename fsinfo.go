@@ -260,5 +260,6 @@ func FormatBytes(size int64) string {
 		idx++
 	}
 
-	return fmt.Sprintf("%.2f%s", fSize, units[idx])
+	str := fmt.Sprintf("%.1f %s", fSize, units[idx])
+	return strings.Replace(str, ".0", "", 1)
 }
