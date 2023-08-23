@@ -102,7 +102,11 @@ func GetFolderInfo(path string) (*FolderInfo, error) {
 	}
 
 	for _, v := range entries {
-		finfo, _ := v.Info()
+		// err -> ErrNotExist
+		finfo, err := v.Info()
+		if err != nil {
+			continue
+		}
 
 		if v.IsDir() {
 			folder := Folder{}
