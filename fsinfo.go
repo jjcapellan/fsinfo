@@ -54,24 +54,27 @@ var current_dir, _ = os.Getwd()
 //  - error: An error, if any, that occurred during the retrieval of the folder information.
 //
 // Example usage:
-//   folderPath := "/path/to/folder"
-//   folderInfo, err := GetFolderInfo(folderPath)
-//   if err != nil {
-//       fmt.Println("Error:", err)
-//       return
-//   }
-//   fmt.Println("Folder Path:", folderInfo.Path)
-//   fmt.Println("Parent Directory:", folderInfo.Dir)
-//   fmt.Println("Subfolders:")
-//   for _, subfolder := range folderInfo.Folders {
-//       fmt.Println("  Name:", subfolder.Name)
-//       fmt.Println("  Path:", subfolder.Path)
-//   }
-//   fmt.Println("Files:")
-//   for _, file := range folderInfo.Files {
-//       fmt.Println("  Name:", file.Name)
-//       fmt.Println("  Path:", file.Path)
-//   }
+//  // Call the GetFolderInfo function to retrieve information about a folder
+//  path := "/path/to/your/target/folder"
+//  folderInfo, err := GetFolderInfo(path)
+//  if err != nil {
+//  	fmt.Printf("Error: %v\n", err)
+//  	return
+//  }
+//
+//  // Print folder information
+//  fmt.Printf("Folder Path: %s\n", folderInfo.Path)
+//  fmt.Printf("Parent Directory: %s\n", folderInfo.Dir)
+//
+//  fmt.Println("Folders:")
+//  for _, folder := range folderInfo.Folders {
+//  	fmt.Printf("- %s (Last Modified: %s)\n", folder.Name, folder.ModTime)
+//  }
+//
+//  fmt.Println("Files:")
+//  for _, file := range folderInfo.Files {
+//  	fmt.Printf("- %s (Size: %d bytes, Last Modified: %s)\n", file.Name, file.Size, file.ModTime)
+//  }
 func GetFolderInfo(path string) (*FolderInfo, error) {
 
 	folderInfo := &FolderInfo{}
