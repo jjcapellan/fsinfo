@@ -23,8 +23,9 @@ type FolderInfo struct {
 }
 
 type Folder struct {
-	Name string // Folder's name
-	Path string // Absolute folder's path
+	Name    string // Folder's name
+	Path    string // Absolute folder's path
+	ModTime time.Time
 }
 
 type File struct {
@@ -101,16 +102,18 @@ func GetFolderInfo(path string) (*FolderInfo, error) {
 	}
 
 	for _, v := range entries {
+		finfo, _ := v.Info()
+
 		if v.IsDir() {
 			folder := Folder{}
 			folder.Name = v.Name()
 			folder.Path = path + "/" + folder.Name
+			folder.ModTime = finfo.ModTime()
 			folders = append(folders, folder)
 			continue
 		}
-		file := File{}
-		finfo, _ := v.Info()
 
+		file := File{}
 		file.Name = finfo.Name()
 		file.Path = path + "/" + file.Name
 		file.Size = finfo.Size()
