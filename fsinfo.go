@@ -281,6 +281,22 @@ func FormatBytes(size int64) string {
 	return strings.Replace(str, ".0", "", 1)
 }
 
+// SetHideDotFiles sets the visibility of dot files and folders when retrieving folder information.
+// When `hide` is set to `true`, the `GetFolderInfo` function will skip dot files and folders (those starting with a dot).
+// When `hide` is set to `false`, dot files and folders will be included in the folder information.
+//
+// Parameters:
+//   - hide (bool): A boolean value indicating whether to hide dot files and folders (true) or not (false). (default = false)
+//
+// Example usage:
+//   // Hide dot files and folders when retrieving folder information
+//   SetHideDotFiles(true)
+//
+//   // Include dot files and folders when retrieving folder information
+//   SetHideDotFiles(false)
+//
+// Note:
+//   Changes made using SetHideDotFiles apply globally to subsequent calls to GetFolderInfo.
 func SetHideDotFiles(hide bool) {
 	hideDotFiles = hide
 }
