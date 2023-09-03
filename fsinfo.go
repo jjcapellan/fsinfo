@@ -40,7 +40,10 @@ type DriveInfo struct {
 	Path string
 }
 
-var current_dir, _ = os.Getwd()
+var (
+	current_dir, _      = os.Getwd()
+	hideDotFiles   bool = false
+)
 
 // GetFolderInfo retrieves information about the contents of a specified folder and its parent directory.
 // It returns a pointer to a FolderInfo struct that contains details about the folder, its subfolders,
@@ -108,6 +111,10 @@ func GetFolderInfo(path string) (*FolderInfo, error) {
 		// err -> ErrNotExist
 		finfo, err := v.Info()
 		if err != nil {
+			continue
+		}
+
+		if hideDotFiles && v.Name()[0] == '.' {
 			continue
 		}
 
@@ -272,4 +279,8 @@ func FormatBytes(size int64) string {
 
 	str := fmt.Sprintf("%.1f %s", fSize, units[idx])
 	return strings.Replace(str, ".0", "", 1)
+}
+
+func SetHideDotFiles(hide bool) {
+	hideDotFiles = hide
 }

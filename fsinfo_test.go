@@ -75,6 +75,39 @@ func TestGetFolderInfoRel(t *testing.T) {
 
 }
 
+func TestHideDotFiles(t *testing.T) {
+	path := "./test_assets"
+	absPath := filepath.Join(wd, path)
+	absPath = filepath.ToSlash(absPath)
+
+	files := []File{
+		//{Name: ".dotfile", Path: absPath + "/" + ".dotfile"}, <-- hideDotFiles == true
+		{Name: "file1.txt", Path: absPath + "/" + "file1.txt"},
+		{Name: "file2.txt", Path: absPath + "/" + "file2.txt"},
+	}
+
+	SetHideDotFiles(true)
+	folderInfo, err := GetFolderInfo(path)
+	if err != nil {
+		t.Fatalf("Error retrieving folderInfo\nPath: %s\nError %s", path, err)
+	}
+	if len(folderInfo.Files) != 2 {
+		t.Fatalf("Error in length of folderInfo.Files\nPath: %s\nLength: %d\nExpected: %d", path, len(folderInfo.Files), 2)
+	}
+
+	_files := folderInfo.Files
+
+	sort.Slice(files, func(i, j int) bool { return files[i].Name < files[j].Name })
+	sort.Slice(_files, func(i, j int) bool { return _files[i].Name < _files[j].Name })
+
+	for k, v := range files {
+		_v := files[k]
+		if _v.Path != v.Path {
+			t.Fatalf("Error in folderInfo.Files[%d]\nPath: %s\nValue: %s\nExpected: %s", k, path, _v.Path, v.Path)
+		}
+	}
+}
+
 func TestGetDrives(t *testing.T) {
 	drives, err := GetDrives()
 	if err != nil {
