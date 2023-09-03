@@ -5,7 +5,8 @@ fsinfo is a lightweight Go package designed to retrieve essential information ab
 * GetFolderInfo: Retrieves information about a folder's contents, subfolders, and files.
 * GetDrives: Obtain details about available drives on the system.
 * GetHomePath: Retrieves the home directory path of the current user.
-* FormatBytes: Converts a size in bytes into a human-readable string representation.  
+* FormatBytes: Converts a size in bytes into a human-readable string representation.
+* SetHideDotFiles: Sets the visibility of dot files and folders when retrieving folder information.
 
 ## Documentation
 This package documentation is indexed by *pkg.go.dev* [here](https://pkg.go.dev/github.com/jjcapellan/fsinfo#section-documentation).

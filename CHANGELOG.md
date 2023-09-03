@@ -1,3 +1,7 @@
+# v0.2.0
+## Added
+- `SetHideDotFiles` functions sets the variable *hideDotFiles* (GetFolderInfo excludes dot files when this variable is true).
+
 # v0.1.3
 ## Changed
 - `Folder` struct includes 1 new property: *ModTime* (time.Time).
