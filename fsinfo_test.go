@@ -75,7 +75,7 @@ func TestGetFolderInfoRel(t *testing.T) {
 
 }
 
-func TestHideDotFiles(t *testing.T) {
+func TestHiddenFiles(t *testing.T) {
 	path := "./test_assets"
 	absPath := filepath.Join(wd, path)
 	absPath = filepath.ToSlash(absPath)
@@ -86,7 +86,7 @@ func TestHideDotFiles(t *testing.T) {
 		{Name: "file2.txt", Path: absPath + "/" + "file2.txt"},
 	}
 
-	SetHideDotFiles(true)
+	ShowHiddenFiles(false)
 	folderInfo, err := GetFolderInfo(path)
 	if err != nil {
 		t.Fatalf("Error retrieving folderInfo\nPath: %s\nError %s", path, err)
