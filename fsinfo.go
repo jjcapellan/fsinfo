@@ -41,8 +41,8 @@ type DriveInfo struct {
 }
 
 var (
-	current_dir, _      = os.Getwd()
-	hideDotFiles   bool = false
+	current_dir, _       = os.Getwd()
+	showHiddenFiles bool = true
 )
 
 // GetFolderInfo retrieves information about the contents of a specified folder and its parent directory.
@@ -114,7 +114,7 @@ func GetFolderInfo(path string) (*FolderInfo, error) {
 			continue
 		}
 
-		if hideDotFiles && v.Name()[0] == '.' {
+		if !showHiddenFiles && isHidden(v) {
 			continue
 		}
 
@@ -281,22 +281,20 @@ func FormatBytes(size int64) string {
 	return strings.Replace(str, ".0", "", 1)
 }
 
-// SetHideDotFiles sets the visibility of dot files and folders when retrieving folder information.
-// When `hide` is set to `true`, the `GetFolderInfo` function will skip dot files and folders (those starting with a dot).
-// When `hide` is set to `false`, dot files and folders will be included in the folder information.
+// ShowHiddenFiles sets the visibility of hidden files and folders when retrieving folder information.
 //
 // Parameters:
-//   - hide (bool): A boolean value indicating whether to hide dot files and folders (true) or not (false). (default = false)
+//   - show (bool): A boolean value indicating whether to hide hidden files and folders (false) or not (true). (default = true)
 //
 // Example usage:
-//   // Hide dot files and folders when retrieving folder information
-//   SetHideDotFiles(true)
+//   // Hide hidden files and folders when retrieving folder information
+//   ShowHiddenFiles(false)
 //
-//   // Include dot files and folders when retrieving folder information
-//   SetHideDotFiles(false)
+//   // Include hidden files and folders when retrieving folder information
+//   ShowHiddenFiles(true)
 //
 // Note:
-//   Changes made using SetHideDotFiles apply globally to subsequent calls to GetFolderInfo.
-func SetHideDotFiles(hide bool) {
-	hideDotFiles = hide
+//   Changes made using ShowHiddenFiles apply globally to subsequent calls to GetFolderInfo.
+func ShowHiddenFiles(show bool) {
+	showHiddenFiles = show
 }
