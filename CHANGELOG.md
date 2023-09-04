@@ -1,3 +1,9 @@
+# v0.3.0
+# Added
+- `isHidden` internal function detects if a file is hidden (works in linux and windows)
+# Changed
+- `SetHideDotFiles` function has been renamed to `ShowHiddenFiles` and its functionality has been extended. Now besides hiding dot files, it also hides windows hidden files.
+
 # v0.2.0
 ## Added
 - `SetHideDotFiles` functions sets the variable *hideDotFiles* (GetFolderInfo excludes dot files when this variable is true).
